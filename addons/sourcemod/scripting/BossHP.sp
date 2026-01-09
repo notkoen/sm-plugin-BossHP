@@ -21,7 +21,7 @@ ArrayList g_aConfig = null;
 ArrayList g_aBoss = null;
 StringMap g_aHadOnce = null;
 
-ConVar g_cvVerboseLog;
+ConVar g_hCVar_VerboseLog;
 
 char g_sConfigLoaded[PLATFORM_MAX_PATH];
 
@@ -53,7 +53,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_bosshp_reload", Command_ReloadConfig, ADMFLAG_CONFIG, "Reload the BossHP Map Config File.");
 	RegAdminCmd("sm_bosshp", Command_IsConfigLoaded, ADMFLAG_GENERIC, "Check if the BossHP Map Config File is loaded.");
 
-	g_cvVerboseLog = CreateConVar("sm_bosshp_verbose", "0", "Verbosity level of logs (0 = error, 1 = info, 2 = debug)", _, true, 0.0, true, 2.0);
+	g_hCVar_VerboseLog = CreateConVar("sm_bosshp_verbose", "0", "Verbosity level of logs (0 = error, 1 = info, 2 = debug)", _, true, 0.0, true, 2.0);
 
 	g_hForward_OnAllBossProcessStart = CreateGlobalForward("BossHP_OnAllBossProcessStart", ET_Ignore, Param_Cell);
 	g_hForward_OnAllBossProcessEnd = CreateGlobalForward("BossHP_OnAllBossProcessEnd", ET_Ignore, Param_Cell);
@@ -78,8 +78,10 @@ public void OnMapEnd()
 
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	if (g_bConfigLoaded && g_cvVerboseLog.IntValue > 0)
+	if (g_bConfigLoaded && g_hCVar_VerboseLog.IntValue > 0)
+	{
 		CPrintToChatAll("{lightgreen}[BossHP]{default} The current map is supported by this plugin.");
+	}
 }
 
 public void OnRoundEnd(Event event, const char[] name, bool dontBroadcast)
@@ -90,7 +92,9 @@ public void OnRoundEnd(Event event, const char[] name, bool dontBroadcast)
 public void OnEntityCreated(int entity, const char[] classname)
 {
 	if (CanTestFeatures() && GetFeatureStatus(FeatureType_Native, "SDKHook_OnEntitySpawned") == FeatureStatus_Available)
+	{
 		return;
+	}
 
 	SDKHook(entity, SDKHook_SpawnPost, OnEntitySpawnedPost);
 }
@@ -98,7 +102,9 @@ public void OnEntityCreated(int entity, const char[] classname)
 public void OnEntityDestroyed(int entity)
 {
 	if (CanTestFeatures() && GetFeatureStatus(FeatureType_Native, "SDKHook_OnEntitySpawned") == FeatureStatus_Available)
+	{
 		return;
+	}
 
 	SDKUnhook(entity, SDKHook_SpawnPost, OnEntitySpawnedPost);
 }
@@ -106,7 +112,9 @@ public void OnEntityDestroyed(int entity)
 public void OnEntitySpawnedPost(int entity)
 {
 	if (!IsValidEntity(entity))
+	{
 		return;
+	}
 
 	// 1 frame later required to get some properties
 	RequestFrame(ProcessEntitySpawned, entity);
@@ -160,16 +168,24 @@ public void OnGameFrame()
 public Action Command_IsConfigLoaded(int client, int args)
 {
 	if (!g_bConfigLoaded)
+	{
 		CReplyToCommand(client, "{lightgreen}[BossHP]{default} Map config file is {red}not loaded.");
+	}
 	else
 	{
 		if (!g_bConfigError)
+		{
 			CReplyToCommand(client, "{lightgreen}[BossHP]{default} Map config file {green}is loaded.");
+		}
 		else
+		{
 			CReplyToCommand(client, "{lightgreen}[BossHP]{default} Map config file is {green}loaded {fullred}but has errors.");
+		}
 
 		if (CheckCommandAccess(client, "sm_bosshp", ADMFLAG_ROOT))
+		{
 			CReplyToCommand(client, "{lightgreen}[BossHP]{default} Actual cfg: {olive}%s", g_sConfigLoaded);
+		}
 	}
 
 	return Plugin_Handled;
@@ -182,12 +198,12 @@ public Action Command_ReloadConfig(int client, int args)
 	return Plugin_Handled;
 }
 
-// ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######  
-// ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ## ##    ## 
-// ##       ##     ## ####  ## ##          ##     ##  ##     ## ####  ## ##       
-// ######   ##     ## ## ## ## ##          ##     ##  ##     ## ## ## ##  ######  
-// ##       ##     ## ##  #### ##          ##     ##  ##     ## ##  ####       ## 
-// ##       ##     ## ##   ### ##    ##    ##     ##  ##     ## ##   ### ##    ## 
+// ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######
+// ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ## ##    ##
+// ##       ##     ## ####  ## ##          ##     ##  ##     ## ####  ## ##
+// ######   ##     ## ## ## ## ##          ##     ##  ##     ## ## ## ##  ######
+// ##       ##     ## ##  #### ##          ##     ##  ##     ## ##  ####       ##
+// ##       ##     ## ##   ### ##    ##    ##     ##  ##     ## ##   ### ##    ##
 // ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######
 
 void Cleanup(bool bCleanConfig = true)
@@ -199,6 +215,7 @@ void Cleanup(bool bCleanConfig = true)
 			CConfig Config = g_aConfig.Get(i);
 			delete Config;
 		}
+
 		delete g_aConfig;
 	}
 
@@ -209,6 +226,7 @@ void Cleanup(bool bCleanConfig = true)
 			CBoss Boss = g_aBoss.Get(i);
 			delete Boss;
 		}
+
 		delete g_aBoss;
 	}
 
@@ -232,7 +250,9 @@ stock void LoadConfig()
 	KeyValues KvConfig = new KeyValues("bosses");
 
 	if (!FileExists(sConfigFile_override))
+	{
 		BuildPath(Path_SM, sConfigFile_override, sizeof(sConfigFile_override), "configs/bosshp/%s_override.cfg", sMapName_lower);
+	}
 
 	if (FileExists(sConfigFile_override))
 	{
@@ -246,14 +266,19 @@ stock void LoadConfig()
 		{
 			g_bConfigLoaded = true;
 			g_sConfigLoaded = sConfigFile_override;
-			if (g_cvVerboseLog.IntValue > 0)
+
+			if (g_hCVar_VerboseLog.IntValue > 0)
+			{
 				LogMessage("Loaded override mapconfig: \"%s\"", sConfigFile_override);
+			}
 		}
 	}
 	else
 	{
 		if (!FileExists(sConfigFile))
+		{
 			BuildPath(Path_SM, sConfigFile, sizeof(sConfigFile), "configs/bosshp/%s.cfg", sMapName_lower);
+		}
 
 		if (!KvConfig.ImportFromFile(sConfigFile))
 		{
@@ -265,8 +290,11 @@ stock void LoadConfig()
 		{
 			g_bConfigLoaded = true;
 			g_sConfigLoaded = sConfigFile;
-			if (g_cvVerboseLog.IntValue > 0)
+
+			if (g_hCVar_VerboseLog.IntValue > 0)
+			{
 				LogMessage("Loaded mapconfig: \"%s\"", sConfigFile);
+			}
 		}
 	}
 
@@ -533,8 +561,10 @@ void OnTrigger(int entity, const char[] output, SDKHookType HookType = view_as<S
 
 	int iHammerID = GetEntProp(entity, Prop_Data, "m_iHammerID");
 
-	if (g_cvVerboseLog.IntValue > 1)
+	if (g_hCVar_VerboseLog.IntValue > 1)
+	{
 		LogMessage("OnTrigger(%d:\"%s\":#%d, \"%s\")", entity, sTargetname, iHammerID, output);
+	}
 
 	for (int i = 0; i < g_aConfig.Length; i++)
 	{
@@ -549,16 +579,22 @@ void OnTrigger(int entity, const char[] output, SDKHookType HookType = view_as<S
 			iTriggerHammerID = StringToInt(sTrigger[1]);
 
 			if (iTriggerHammerID != iHammerID)
+			{
 				continue;
+			}
 		}
 		else if (!sTargetname[0] || strcmp(sTargetname, sTrigger, false) != 0)
+		{
 			continue;
+		}
 
 		char sOutput[64];
 		GetEntityOrConfigOutput(Config, sOutput, sizeof(sOutput));
 
 		if (strcmp(output, sOutput, false) != 0)
+		{
 			continue;
+		}
 
 		bool Once = !Config.bMultiTrigger;
 		char sTemp[8];
@@ -568,13 +604,17 @@ void OnTrigger(int entity, const char[] output, SDKHookType HookType = view_as<S
 			IntToString(i, sTemp, sizeof(sTemp));
 			bool bHadOnce = false;
 			if (g_aHadOnce.GetValue(sTemp, bHadOnce) && bHadOnce)
+			{
 				continue;
+			}
 		}
 
 		if (HookType != view_as<SDKHookType>(-1) && Once)
 		{
 			if (HookType == SDKHook_OnTakeDamagePost)
+			{
 				SDKUnhook(entity, SDKHook_OnTakeDamagePost, OnTakeDamagePost);
+			}
 		}
 
 		CBoss Boss = BossAdd(Config, entity);
@@ -582,9 +622,11 @@ void OnTrigger(int entity, const char[] output, SDKHookType HookType = view_as<S
 		if (Boss != INVALID_HANDLE)
 		{
 			if (Once)
+			{
 				g_aHadOnce.SetValue(sTemp, true);
+			}
 
-			if (g_cvVerboseLog.IntValue > 0)
+			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
 				if (iTriggerHammerID == -1)
 					LogMessage("Triggered boss %s(%d) from output %s", sTargetname, entity, output);
@@ -618,7 +660,9 @@ void OnShowTrigger(int entity, const char[] output, SDKHookType HookType = view_
 		Config.GetShowTrigger(sShowTrigger, sizeof(sShowTrigger));
 
 		if (!sShowTrigger[0])
+		{
 			continue;
+		}
 
 		int iShowTriggerHammerID = -1;
 		if (sShowTrigger[0] == '#')
@@ -626,29 +670,41 @@ void OnShowTrigger(int entity, const char[] output, SDKHookType HookType = view_
 			iShowTriggerHammerID = StringToInt(sShowTrigger[1]);
 
 			if (iShowTriggerHammerID != iHammerID)
+			{
 				continue;
+			}
 		}
 		else if (!sTargetname[0] || strcmp(sTargetname, sShowTrigger, false) != 0)
+		{
 			continue;
+		}
 
 		char sShowOutput[64];
 		Config.GetShowOutput(sShowOutput, sizeof(sShowOutput));
 
 		if (strcmp(output, sShowOutput, false) != 0)
+		{
 			continue;
+		}
 
-		if (g_cvVerboseLog.IntValue > 0)
+		if (g_hCVar_VerboseLog.IntValue > 0)
 		{
 			if (iShowTriggerHammerID == -1)
+			{
 				LogMessage("Triggered show boss %s(%d) from output %s", sTargetname, entity, output);
+			}
 			else
+			{
 				LogMessage("Triggered show boss #%d(%d) from output %s", iShowTriggerHammerID, entity, output);
+			}
 		}
 
 		if (HookType != view_as<SDKHookType>(-1) && !Config.bMultiTrigger)
 		{
 			if (HookType == SDKHook_OnTakeDamagePost)
+			{
 				SDKUnhook(entity, SDKHook_OnTakeDamagePost, OnTakeDamagePost);
+			}
 		}
 
 		float fShowTriggerDelay = Config.fShowTriggerDelay;
@@ -658,22 +714,30 @@ void OnShowTrigger(int entity, const char[] output, SDKHookType HookType = view_
 			CBoss Boss = g_aBoss.Get(j);
 
 			if (Boss.dConfig != Config)
+			{
 				continue;
+			}
 
 			if (Boss.iTemplateNum != iTemplateNum)
+			{
 				continue;
+			}
 
 			if (fShowTriggerDelay > 0)
 			{
 				Boss.fShowAt = GetGameTime() + fShowTriggerDelay;
-				if (g_cvVerboseLog.IntValue > 0)
+				if (g_hCVar_VerboseLog.IntValue > 0)
+				{
 					LogMessage("Scheduled show(%f) boss %d", fShowTriggerDelay, j);
+				}
 			}
 			else
 			{
 				Boss.bShow = true;
-				if (g_cvVerboseLog.IntValue > 0)
+				if (g_hCVar_VerboseLog.IntValue > 0)
+				{
 					LogMessage("Showing boss %d", j);
+				}
 			}
 		}
 	}
@@ -702,7 +766,9 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 		Config.GetKillTrigger(sKillTrigger, sizeof(sKillTrigger));
 
 		if (!sKillTrigger[0])
+		{
 			continue;
+		}
 
 		int iKillTriggerHammerID = -1;
 		if (sKillTrigger[0] == '#')
@@ -710,29 +776,41 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 			iKillTriggerHammerID = StringToInt(sKillTrigger[1]);
 
 			if (iKillTriggerHammerID != iHammerID)
+			{
 				continue;
+			}
 		}
 		else if (!sTargetname[0] || strcmp(sTargetname, sKillTrigger, false) != 0)
+		{
 			continue;
+		}
 
 		char sKillOutput[64];
 		Config.GetKillOutput(sKillOutput, sizeof(sKillOutput));
 
 		if (strcmp(output, sKillOutput, false) != 0)
+		{
 			continue;
+		}
 
-		if (g_cvVerboseLog.IntValue > 0)
+		if (g_hCVar_VerboseLog.IntValue > 0)
 		{
 			if (iKillTriggerHammerID == -1)
+			{
 				LogMessage("Triggered kill boss %s(%d) from output %s", sTargetname, entity, output);
+			}
 			else
+			{
 				LogMessage("Triggered kill boss #%d(%d) from output %s", iKillTriggerHammerID, entity, output);
+			}
 		}
 
 		if (HookType != view_as<SDKHookType>(-1) && !Config.bMultiTrigger)
 		{
 			if (HookType == SDKHook_OnTakeDamagePost)
+			{
 				SDKUnhook(entity, SDKHook_OnTakeDamagePost, OnTakeDamagePost);
+			}
 		}
 
 		float fKillTriggerDelay = Config.fKillTriggerDelay;
@@ -742,16 +820,22 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 			CBoss Boss = g_aBoss.Get(j);
 
 			if (Boss.dConfig != Config)
+			{
 				continue;
+			}
 
 			if (Boss.iTemplateNum != iTemplateNum)
+			{
 				continue;
+			}
 
 			if (fKillTriggerDelay > 0)
 			{
 				Boss.fKillAt = GetGameTime() + fKillTriggerDelay;
-				if (g_cvVerboseLog.IntValue > 0)
+				if (g_hCVar_VerboseLog.IntValue > 0)
+				{
 					LogMessage("Scheduled kill(%f) boss %d", fKillTriggerDelay, j);
+				}
 			}
 			else
 			{
@@ -759,8 +843,10 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 				delete Boss;
 				g_aBoss.Erase(j);
 				j--;
-				if (g_cvVerboseLog.IntValue > 0)
+				if (g_hCVar_VerboseLog.IntValue > 0)
+				{
 					LogMessage("Killed boss %d", j + 1);
+				}
 			}
 		}
 	}
@@ -769,11 +855,15 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 void ProcessEnvEntityMakerEntitySpawned(const char[] output, int caller, int activator, float delay)
 {
 	if (!g_aConfig)
+	{
 		return;
+	}
 
 	char sClassname[64];
 	if (!GetEntityClassname(caller, sClassname, sizeof(sClassname)))
+	{
 		return;
+	}
 
 	if (strcmp(sClassname, "env_entity_maker", false) != 0)
 	{
@@ -785,11 +875,15 @@ void ProcessEnvEntityMakerEntitySpawned(const char[] output, int caller, int act
 
 	char sPointTemplate[64];
 	if (GetEntPropString(caller, Prop_Data, "m_iszTemplate", sPointTemplate, sizeof(sPointTemplate)) <= 0)
+	{
 		return;
+	}
 
 	int iPointTemplate = FindEntityByTargetname(INVALID_ENT_REFERENCE, sPointTemplate, "point_template");
 	if (iPointTemplate == INVALID_ENT_REFERENCE)
+	{
 		return;
+	}
 
 	OnEntityOutput("OnEntitySpawned", iPointTemplate, caller, delay);
 }
@@ -797,13 +891,17 @@ void ProcessEnvEntityMakerEntitySpawned(const char[] output, int caller, int act
 void ProcessEntitySpawned(int entity)
 {
 	if (!g_aConfig || !IsValidEntity(entity))
+	{
 		return;
+	}
 
 	char sTargetname[64];
 	GetEntPropString(entity, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
 
-	if (g_cvVerboseLog.IntValue > 1)
+	if (g_hCVar_VerboseLog.IntValue > 1)
+	{
 		LogMessage("ProcessEntitySpawned(%s)", sTargetname);
+	}
 
 	int iHammerID = GetEntProp(entity, Prop_Data, "m_iHammerID");
 
@@ -816,7 +914,9 @@ void ProcessEntitySpawned(int entity)
 
 		int iTriggerHammerID = -1;
 		if (sTrigger[0] == '#')
+		{
 			iTriggerHammerID = StringToInt(sTrigger[1]);
+		}
 
 		if ((iTriggerHammerID == -1 && sTargetname[0] && strcmp(sTargetname, sTrigger, false) == 0) || iTriggerHammerID == iHammerID)
 		{
@@ -833,8 +933,10 @@ void ProcessEntitySpawned(int entity)
 				HookSingleEntityOutput(entity, sOutput, OnEntityOutput, Once);
 			}
 
-			if (g_cvVerboseLog.IntValue > 0)
+			if (g_hCVar_VerboseLog.IntValue > 0)
+			{
 				LogMessage("Hooked trigger %s:%s", sTrigger, sOutput);
+			}
 		}
 
 		char sShowTrigger[64];
@@ -842,7 +944,9 @@ void ProcessEntitySpawned(int entity)
 
 		int iShowTriggerHammerID = -1;
 		if (sShowTrigger[0] == '#')
+		{
 			iShowTriggerHammerID = StringToInt(sShowTrigger[1]);
+		}
 
 		if ((iShowTriggerHammerID == -1 && sShowTrigger[0] && strcmp(sTargetname, sShowTrigger, false) == 0) || iShowTriggerHammerID == iHammerID)
 		{
@@ -859,8 +963,10 @@ void ProcessEntitySpawned(int entity)
 				HookSingleEntityOutput(entity, sShowOutput, OnEntityOutputShow, Once);
 			}
 
-			if (g_cvVerboseLog.IntValue > 0)
+			if (g_hCVar_VerboseLog.IntValue > 0)
+			{
 				LogMessage("Hooked showtrigger %s:%s", sShowTrigger, sShowOutput);
+			}
 		}
 
 		char sKillTrigger[64];
@@ -868,7 +974,9 @@ void ProcessEntitySpawned(int entity)
 
 		int iKillTriggerHammerID = -1;
 		if (sKillTrigger[0] == '#')
+		{
 			iKillTriggerHammerID = StringToInt(sKillTrigger[1]);
+		}
 
 		if ((iKillTriggerHammerID == -1 && sKillTrigger[0] && strcmp(sTargetname, sKillTrigger, false) == 0) || iKillTriggerHammerID == iHammerID)
 		{
@@ -885,8 +993,10 @@ void ProcessEntitySpawned(int entity)
 				HookSingleEntityOutput(entity, sKillOutput, OnEntityOutputKill, Once);
 			}
 
-			if (g_cvVerboseLog.IntValue > 0)
+			if (g_hCVar_VerboseLog.IntValue > 0)
+			{
 				LogMessage("Hooked killtrigger %s:%s", sKillTrigger, sKillOutput);
+			}
 		}
 	}
 }
@@ -894,7 +1004,9 @@ void ProcessEntitySpawned(int entity)
 void ProcessGameFrame()
 {
 	if (!g_aBoss || g_aBoss.Length <= 0)
+	{
 		return;
+	}
 
 	CreateForward_OnAllBossProcessStart(g_aBoss);
 
@@ -907,12 +1019,13 @@ void ProcessGameFrame()
 
 		if (Boss.fKillAt && Boss.fKillAt < fGameTime)
 		{
-			if (g_cvVerboseLog.IntValue > 0)
+			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
 				char sBoss[64];
 				_Config.GetName(sBoss, sizeof(sBoss));
 				LogMessage("Deleting boss %s (%d) (KillAt)", sBoss, i);
 			}
+
 			CreateForward_OnBossDead(Boss);
 			delete Boss;
 			g_aBoss.Erase(i);
@@ -925,22 +1038,28 @@ void ProcessGameFrame()
 			if (Boss.fWaitUntil)
 			{
 				if (Boss.fWaitUntil > fGameTime)
+				{
 					continue;
+				}
+
 				Boss.fWaitUntil = 0.0;
 			}
 
 			if (!BossInit(Boss))
+			{
 				continue;
+			}
 		}
 
 		if (!BossProcess(Boss))
 		{
-			if (g_cvVerboseLog.IntValue > 0)
+			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
 				char sBoss[64];
 				_Config.GetName(sBoss, sizeof(sBoss));
 				LogMessage("Deleting boss %s (%d) (dead)", sBoss, i);
 			}
+
 			CreateForward_OnBossDead(Boss);
 			delete Boss;
 			g_aBoss.Erase(i);
@@ -956,11 +1075,17 @@ stock CBoss BossAdd(CConfig Config, int entity)
 	CBoss Boss = view_as<CBoss>(INVALID_HANDLE);
 
 	if (Config.IsBreakable)
+	{
 		Boss = new CBossBreakable();
+	}
 	else if (Config.IsCounter)
+	{
 		Boss = new CBossCounter();
+	}
 	else if (Config.IsHPBar)
+	{
 		Boss = new CBossHPBar();
+	}
 
 	if (Boss != INVALID_HANDLE)
 	{
@@ -970,15 +1095,20 @@ stock CBoss BossAdd(CConfig Config, int entity)
 
 		float fTriggerDelay = Config.fTriggerDelay;
 		if (fTriggerDelay > 0)
+		{
 			Boss.fWaitUntil = GetGameTime() + fTriggerDelay;
+		}
 
 		char sShowTrigger[8];
 		Config.GetShowTrigger(sShowTrigger, sizeof(sShowTrigger));
 		if (sShowTrigger[0])
+		{
 			Boss.bShow = false;
+		}
 
 		g_aBoss.Push(Boss);
 	}
+
 	return Boss;
 }
 
@@ -1002,7 +1132,9 @@ bool BossInit(CBoss _Boss)
 		{
 			iBreakableEnt = FindEntityByTargetname(iBreakableEnt, sBreakable, "*");
 			if (iBreakableEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 		}
 		else
 		{
@@ -1014,7 +1146,9 @@ bool BossInit(CBoss _Boss)
 				{
 					CBoss _tBoss = g_aBoss.Get(i);
 					if (!_tBoss.IsBreakable)
+					{
 						continue;
+					}
 
 					CBossBreakable tBoss = view_as<CBossBreakable>(_tBoss);
 					if (tBoss.iBreakableEnt == iBreakableEnt)
@@ -1025,17 +1159,23 @@ bool BossInit(CBoss _Boss)
 				}
 
 				if (!bSkip)
+				{
 					break;
+				}
 			}
 
 			if (iBreakableEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 
 			GetEntPropString(iBreakableEnt, Prop_Data, "m_iName", sBreakable, sizeof(sBreakable));
 
 			int iTemplateLoc = FindCharInString(sBreakable, '&', true);
 			if (iTemplateLoc == -1)
+			{
 				return false;
+			}
 
 			iTemplateNum = StringToInt(sBreakable[iTemplateLoc + 1]);
 		}
@@ -1056,7 +1196,9 @@ bool BossInit(CBoss _Boss)
 		{
 			iCounterEnt = FindEntityByTargetname(iCounterEnt, sCounter, "math_counter");
 			if (iCounterEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 		}
 		else
 		{
@@ -1071,7 +1213,9 @@ bool BossInit(CBoss _Boss)
 				{
 					CBoss _tBoss = g_aBoss.Get(i);
 					if (!_tBoss.IsCounter)
+					{
 						continue;
+					}
 
 					CBossCounter tBoss = view_as<CBossCounter>(_tBoss);
 					if (tBoss.iCounterEnt == iCounterEnt)
@@ -1082,17 +1226,23 @@ bool BossInit(CBoss _Boss)
 				}
 
 				if (!bSkip)
+				{
 					break;
+				}
 			}
 
 			if (iCounterEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 
 			GetEntPropString(iCounterEnt, Prop_Data, "m_iName", sCounter, sizeof(sCounter));
 
 			int iTemplateLoc = FindCharInString(sCounter, '&', true);
 			if (iTemplateLoc == -1)
+			{
 				return false;
+			}
 
 			iTemplateNum = StringToInt(sCounter[iTemplateLoc + 1]);
 		}
@@ -1125,15 +1275,21 @@ bool BossInit(CBoss _Boss)
 		{
 			iIteratorEnt = FindEntityByTargetname(iIteratorEnt, sIterator, "math_counter");
 			if (iIteratorEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 
 			iCounterEnt = FindEntityByTargetname(iCounterEnt, sCounter, "math_counter");
 			if (iCounterEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 
 			iBackupEnt = FindEntityByTargetname(iBackupEnt, sBackup, "math_counter");
 			if (iBackupEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 		}
 		else
 		{
@@ -1145,7 +1301,9 @@ bool BossInit(CBoss _Boss)
 				{
 					CBoss _tBoss = g_aBoss.Get(i);
 					if (!_tBoss.IsHPBar)
+					{
 						continue;
+					}
 
 					CBossHPBar tBoss = view_as<CBossHPBar>(_tBoss);
 					if (tBoss.iIteratorEnt == iIteratorEnt)
@@ -1156,28 +1314,38 @@ bool BossInit(CBoss _Boss)
 				}
 
 				if (!bSkip)
+				{
 					break;
+				}
 			}
 
 			if (iIteratorEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 
 			GetEntPropString(iIteratorEnt, Prop_Data, "m_iName", sIterator, sizeof(sIterator));
 
 			int iTemplateLoc = FindCharInString(sIterator, '&', true);
 			if (iTemplateLoc == -1)
+			{
 				return false;
+			}
 
 			StrCat(sCounter, sizeof(sCounter), sIterator[iTemplateLoc]);
 			StrCat(sBackup, sizeof(sBackup), sIterator[iTemplateLoc]);
 
 			iCounterEnt = FindEntityByTargetname(iCounterEnt, sCounter, "math_counter");
 			if (iCounterEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 
 			iBackupEnt = FindEntityByTargetname(iBackupEnt, sBackup, "math_counter");
 			if (iBackupEnt == INVALID_ENT_REFERENCE)
+			{
 				return false;
+			}
 
 			iTemplateNum = StringToInt(sIterator[iTemplateLoc + 1]);
 		}
@@ -1225,8 +1393,10 @@ bool BossInit(CBoss _Boss)
 					HookSingleEntityOutput(entity, sShowOutput, OnEntityOutputShow, true);
 				}
 
-				if (g_cvVerboseLog.IntValue > 0)
+				if (g_hCVar_VerboseLog.IntValue > 0)
+				{
 					LogMessage("Hooked showtrigger %s:%s", sShowTrigger, sShowOutput);
+				}
 			}
 		}
 
@@ -1252,16 +1422,21 @@ bool BossInit(CBoss _Boss)
 					HookSingleEntityOutput(entity, sKillOutput, OnEntityOutputKill, true);
 				}
 
-				if (g_cvVerboseLog.IntValue > 0)
+				if (g_hCVar_VerboseLog.IntValue > 0)
+				{
 					LogMessage("Hooked killtrigger %s:%s", sKillTrigger, sKillOutput);
+				}
 			}
 		}
 	}
 
 	char sBoss[64];
 	_Config.GetName(sBoss, sizeof(sBoss));
-	if (g_cvVerboseLog.IntValue > 0)
+	if (g_hCVar_VerboseLog.IntValue > 0)
+	{
 		LogMessage("Initialized boss %s (template = %d)", sBoss, iTemplateNum);
+	}
+
 	CreateForward_OnBossInitialized(_Boss);
 
 	return true;
@@ -1283,9 +1458,13 @@ bool BossProcess(CBoss _Boss)
 		int iBreakableEnt = Boss.iBreakableEnt;
 
 		if (IsValidEntity(iBreakableEnt))
+		{
 			iHealth = GetEntProp(iBreakableEnt, Prop_Data, "m_iHealth");
+		}
 		else
+		{
 			bInvalid = true;
+		}
 	}
 	else if (_Boss.IsCounter)
 	{
@@ -1310,7 +1489,9 @@ bool BossProcess(CBoss _Boss)
 			}
 		}
 		else
+		{
 			bInvalid = true;
+		}
 	}
 	else if (_Boss.IsHPBar)
 	{
@@ -1350,15 +1531,21 @@ bool BossProcess(CBoss _Boss)
 			}
 		}
 		else
+		{
 			bInvalid = true;
+		}
 	}
 
 	if (iHealth < 0)
+	{
 		iHealth = 0;
+	}
 
 	int iOffset = _Config.iOffset;
 	if (iOffset != 0)
+	{
 		iHealth += iOffset;
+	}
 
 	bool bHealthChanged = (iHealth != iLastHealth);
 	if (bHealthChanged)
@@ -1372,13 +1559,17 @@ bool BossProcess(CBoss _Boss)
 	{
 		// Boss invalid: Delete boss
 		if (bInvalid)
+		{
 			return false;
+		}
 
 		return true;
 	}
 
 	if (iLastHealth == 0)
+	{
 		_Boss.iBaseHealth = iHealth;
+	}
 
 	_Boss.iLastHealth = iLastHealth;
 	_Boss.iHealth = iHealth;
@@ -1394,7 +1585,9 @@ bool BossProcess(CBoss _Boss)
 
 	// Boss dead/invalid: Delete boss
 	if (!iHealth || bInvalid)
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -1408,7 +1601,9 @@ int FindEntityByTargetname(int entity, const char[] sTargetname, const char[] sC
 		while ((entity = FindEntityByClassname(entity, sClassname)) != INVALID_ENT_REFERENCE)
 		{
 			if (GetEntProp(entity, Prop_Data, "m_iHammerID") == HammerID)
+			{
 				return entity;
+			}
 		}
 	}
 	else // Targetname
@@ -1419,23 +1614,27 @@ int FindEntityByTargetname(int entity, const char[] sTargetname, const char[] sC
 		while ((entity = FindEntityByClassname(entity, sClassname)) != INVALID_ENT_REFERENCE)
 		{
 			if (GetEntPropString(entity, Prop_Data, "m_iName", sTargetnameBuf, sizeof(sTargetnameBuf)) <= 0)
+			{
 				continue;
+			}
 
 			if (strncmp(sTargetnameBuf, sTargetname, Wildcard) == 0)
+			{
 				return entity;
+			}
 		}
 	}
 
 	return INVALID_ENT_REFERENCE;
 }
 
-//########  #######  ########  ##      ##    ###    ########  ########   ######  
-//##       ##     ## ##     ## ##  ##  ##   ## ##   ##     ## ##     ## ##    ## 
-//##       ##     ## ##     ## ##  ##  ##  ##   ##  ##     ## ##     ## ##       
-//######   ##     ## ########  ##  ##  ## ##     ## ########  ##     ##  ######  
-//##       ##     ## ##   ##   ##  ##  ## ######### ##   ##   ##     ##       ## 
-//##       ##     ## ##    ##  ##  ##  ## ##     ## ##    ##  ##     ## ##    ## 
-//##        #######  ##     ##  ###  ###  ##     ## ##     ## ########   ######  
+//########  #######  ########  ##      ##    ###    ########  ########   ######
+//##       ##     ## ##     ## ##  ##  ##   ## ##   ##     ## ##     ## ##    ##
+//##       ##     ## ##     ## ##  ##  ##  ##   ##  ##     ## ##     ## ##
+//######   ##     ## ########  ##  ##  ## ##     ## ########  ##     ##  ######
+//##       ##     ## ##   ##   ##  ##  ## ######### ##   ##   ##     ##       ##
+//##       ##     ## ##    ##  ##  ##  ## ##     ## ##    ##  ##     ## ##    ##
+//##        #######  ##     ##  ###  ###  ##     ## ##     ## ########   ######
 
 public void CreateForward_OnBossInitialized(CBoss boss)
 {
@@ -1487,11 +1686,15 @@ public void CreateForward_OnAllBossProcessEnd(ArrayList aBoss)
 public int Native_IsBossEntity(Handle plugin, int numParams)
 {
 	if (!g_aBoss || g_aBoss.Length <= 0)
+	{
 		return false;
+	}
 
 	int entity = GetNativeCell(1);
 	if (!IsValidEntity(entity))
+	{
 		return false;
+	}
 
 	CBoss _boss;
 	int i = 0;
@@ -1499,30 +1702,39 @@ public int Native_IsBossEntity(Handle plugin, int numParams)
 	{
 		_boss = g_aBoss.Get(i);
 		if (_boss.iEntity == entity)
+		{
 			break;
+		}
 		else
 		{
 			if (_boss.IsBreakable)
 			{
 				CBossBreakable boss = view_as<CBossBreakable>(_boss);
 				if (boss.iBreakableEnt == entity)
+				{
 					break;
+				}
 			}
+
 			if (_boss.IsCounter)
 			{
 				CBossCounter boss = view_as<CBossCounter>(_boss);
 				if (boss.iCounterEnt == entity)
+				{
 					break;
+				}
 			}
+
 			if (_boss.IsHPBar)
 			{
 				CBossHPBar boss = view_as<CBossHPBar>(_boss);
-				if (boss.iCounterEnt == entity ||
-					boss.iBackupEnt == entity ||
-					boss.iIteratorEnt == entity)
+				if (boss.iCounterEnt == entity || boss.iBackupEnt == entity || boss.iIteratorEnt == entity)
+				{
 					break;
+				}
 			}
 		}
+
 		i++;
 	}
 

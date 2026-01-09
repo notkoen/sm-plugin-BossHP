@@ -169,20 +169,26 @@ methodmap CBoss < Basic
 		}
 	}
 
-	property bool IsBreakable {
-		public get() {
+	property bool IsBreakable
+	{
+		public get()
+		{
 			return this.dConfig.IsBreakable;
 		}
 	}
 
-	property bool IsCounter {
-		public get() {
+	property bool IsCounter
+	{
+		public get()
+		{
 			return this.dConfig.IsCounter;
 		}
 	}
 
-	property bool IsHPBar {
-		public get() {
+	property bool IsHPBar
+	{
+		public get()
+		{
 			return this.dConfig.IsHPBar;
 		}
 	}
