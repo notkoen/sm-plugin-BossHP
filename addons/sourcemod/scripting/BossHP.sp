@@ -9,8 +9,6 @@
 #include <smlib>
 #include <multicolors>
 
-#define MathCounterBackupSize 10
-
 Handle g_hForward_OnBossInitialized = INVALID_HANDLE;
 Handle g_hForward_OnBossProcessed = INVALID_HANDLE;
 Handle g_hForward_OnBossDead = INVALID_HANDLE;
