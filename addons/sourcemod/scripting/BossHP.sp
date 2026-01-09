@@ -62,6 +62,7 @@ public void OnPluginStart()
 	g_hForward_OnBossDead = CreateGlobalForward("BossHP_OnBossDead", ET_Ignore, Param_Cell);
 
 	AutoExecConfig(true);
+	LoadTranslations("BossHP.phrases");
 }
 
 public void OnConfigsExecuted()
@@ -80,7 +81,7 @@ public void OnRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	if (g_bConfigLoaded && g_hCVar_VerboseLog.IntValue > 0)
 	{
-		CPrintToChatAll("{lightgreen}[BossHP]{default} The current map is supported by this plugin.");
+		CPrintToChatAll("%s %t", BossHP_TAG, "Map Supported");
 	}
 }
 
@@ -169,22 +170,22 @@ public Action Command_IsConfigLoaded(int client, int args)
 {
 	if (!g_bConfigLoaded)
 	{
-		CReplyToCommand(client, "{lightgreen}[BossHP]{default} Map config file is {red}not loaded.");
+		CReplyToCommand(client, "%s %t", BossHP_TAG, "Config Not Loaded");
 	}
 	else
 	{
 		if (!g_bConfigError)
 		{
-			CReplyToCommand(client, "{lightgreen}[BossHP]{default} Map config file {green}is loaded.");
+			CReplyToCommand(client, "%s %t", BossHP_TAG, "Config Loaded");
 		}
 		else
 		{
-			CReplyToCommand(client, "{lightgreen}[BossHP]{default} Map config file is {green}loaded {fullred}but has errors.");
+			CReplyToCommand(client, "%s %t", BossHP_TAG, "Config Error");
 		}
 
 		if (CheckCommandAccess(client, "sm_bosshp", ADMFLAG_ROOT))
 		{
-			CReplyToCommand(client, "{lightgreen}[BossHP]{default} Actual cfg: {olive}%s", g_sConfigLoaded);
+			CReplyToCommand(client, "%s %t", BossHP_TAG, "Config File", g_sConfigLoaded);
 		}
 	}
 
@@ -194,7 +195,7 @@ public Action Command_IsConfigLoaded(int client, int args)
 public Action Command_ReloadConfig(int client, int args)
 {
 	OnConfigsExecuted();
-	ReplyToCommand(client, "[BossHP] Map config file has been reloaded.");
+	CReplyToCommand(client, "%s %t", BossHP_TAG, "Reload Config");
 	return Plugin_Handled;
 }
 

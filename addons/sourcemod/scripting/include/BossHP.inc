@@ -15,6 +15,8 @@
 
 #define BossHP_VERSION   BossHP_V_MAJOR..."."...BossHP_V_MINOR..."."...BossHP_V_PATCH
 
+#define BossHP_TAG      "{green}[BossHP]{white}"
+
 #include "CConfig.inc"
 #include "CBoss.inc"
 

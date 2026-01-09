@@ -1,0 +1,46 @@
+"Phrases"
+{
+    "Map Supported"
+    {
+        "en"        "The current map is supported by this plugin."
+        "zho"       "當前地圖有配置。"
+        "chi"       "当前地图有配置。"
+    }
+
+    "Config Not Loaded"
+    {
+        "en"        "Map config file is {red}not loaded{white}."
+        "zho"       "當前地圖配置{red}未載入{white}。"
+        "chi"       "当前地图配置{red}未载入{white}。"
+    }
+
+    "Config Loaded"
+    {
+        "en"        "Map config file is {green}loaded{white}."
+        "zho"       "當前地圖配置{green}已載入{white}。"
+        "chi"       "当前地图配置{green}已载入{white}。"
+    }
+
+    "Config Error"
+    {
+        "en"        "Map config file is {green}loaded {fullred}but contains errors{white}."
+        "zho"       "當前地圖配置{green}已載入{fullred}但有問題{green}。"
+        "chi"       "当前地图配置{green}已载入{fullred}但有问题{green}。"
+    }
+
+    "Config File"
+    {
+        "#format"   "{1:s}"
+
+        "en"        "Loaded config file: {green}{1}"
+        "zho"       "配置位置：{green}{1}"
+        "chi"       "配置位置：{green}{1}"
+    }
+
+    "Reload Config"
+    {
+        "en"        "Reloaded map config file."
+        "zho"       "已重新載入地圖配置。"
+        "chi"       "已重新载入地图配置。"
+    }
+}
