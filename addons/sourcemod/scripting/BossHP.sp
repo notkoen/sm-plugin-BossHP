@@ -258,7 +258,7 @@ stock void LoadConfig()
 	{
 		if (!KvConfig.ImportFromFile(sConfigFile_override))
 		{
-			LogMessage("Unable to load config override: \"%s\"", sConfigFile_override);
+			LogMessage("[BossHP] Unable to load config override: \"%s\"", sConfigFile_override);
 			delete KvConfig;
 			return;
 		}
@@ -269,7 +269,7 @@ stock void LoadConfig()
 
 			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
-				LogMessage("Loaded override mapconfig: \"%s\"", sConfigFile_override);
+				LogMessage("[BossHP] Loaded override mapconfig: \"%s\"", sConfigFile_override);
 			}
 		}
 	}
@@ -282,7 +282,7 @@ stock void LoadConfig()
 
 		if (!KvConfig.ImportFromFile(sConfigFile))
 		{
-			LogMessage("Unable to load config: \"%s\"", sConfigFile);
+			LogMessage("[BossHP] Unable to load config: \"%s\"", sConfigFile);
 			delete KvConfig;
 			return;
 		}
@@ -293,7 +293,7 @@ stock void LoadConfig()
 
 			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
-				LogMessage("Loaded mapconfig: \"%s\"", sConfigFile);
+				LogMessage("[BossHP] Loaded mapconfig: \"%s\"", sConfigFile);
 			}
 		}
 	}
@@ -304,7 +304,7 @@ stock void LoadConfig()
 	{
 		delete KvConfig;
 		g_bConfigError = true;
-		LogError("GotoFirstSubKey() failed!");
+		LogError("[BossHP] GotoFirstSubKey() failed!");
 		return;
 	}
 
@@ -320,7 +320,7 @@ stock void LoadConfig()
 		if (!sName[0])
 		{
 			g_bConfigError = true;
-			LogError("Could not find \"name\" in \"%s\"", sSection);
+			LogError("[BossHP] Could not find \"name\" in \"%s\"", sSection);
 			continue;
 		}
 
@@ -332,7 +332,7 @@ stock void LoadConfig()
 		if (!sMethod[0])
 		{
 			g_bConfigError = true;
-			LogError("Could not find \"method\" in \"%s\"", sSection);
+			LogError("[BossHP] Could not find \"method\" in \"%s\"", sSection);
 			continue;
 		}
 
@@ -341,7 +341,7 @@ stock void LoadConfig()
 		if (!sTrigger[0])
 		{
 			g_bConfigError = true;
-			LogError("Could not find \"trigger\" in \"%s\"", sSection);
+			LogError("[BossHP] Could not find \"trigger\" in \"%s\"", sSection);
 			continue;
 		}
 
@@ -349,7 +349,7 @@ stock void LoadConfig()
 		if ((iTriggerDelim = FindCharInString(sTrigger, ':')) == -1)
 		{
 			g_bConfigError = true;
-			LogError("Delimiter ':' not found in \"trigger\"(%s) in \"%s\"", sTrigger, sSection);
+			LogError("[BossHP] Delimiter ':' not found in \"trigger\"(%s) in \"%s\"", sTrigger, sSection);
 			continue;
 		}
 		sTrigger[iTriggerDelim] = 0;
@@ -373,7 +373,7 @@ stock void LoadConfig()
 			if ((iShowTriggerDelim = FindCharInString(sShowTrigger, ':')) == -1)
 			{
 				g_bConfigError = true;
-				LogError("Delimiter ':' not found in \"showtrigger\"(%s) in \"%s\"", sShowTrigger, sSection);
+				LogError("[BossHP] Delimiter ':' not found in \"showtrigger\"(%s) in \"%s\"", sShowTrigger, sSection);
 				continue;
 			}
 			sShowTrigger[iShowTriggerDelim] = 0;
@@ -396,7 +396,7 @@ stock void LoadConfig()
 			if ((iKillTriggerDelim = FindCharInString(sKillTrigger, ':')) == -1)
 			{
 				g_bConfigError = true;
-				LogError("Delimiter ':' not found in \"killtrigger\"(%s) in \"%s\"", sKillTrigger, sSection);
+				LogError("[BossHP] Delimiter ':' not found in \"killtrigger\"(%s) in \"%s\"", sKillTrigger, sSection);
 				continue;
 			}
 			sKillTrigger[iKillTriggerDelim] = 0;
@@ -427,7 +427,7 @@ stock void LoadConfig()
 			if (!KvConfig.GetString("breakable", sBreakable, sizeof(sBreakable)))
 			{
 				g_bConfigError = true;
-				LogError("Could not find \"breakable\" in \"%s\"", sSection);
+				LogError("[BossHP] Could not find \"breakable\" in \"%s\"", sSection);
 				continue;
 			}
 
@@ -443,7 +443,7 @@ stock void LoadConfig()
 			if (!KvConfig.GetString("counter", sCounter, sizeof(sCounter)))
 			{
 				g_bConfigError = true;
-				LogError("Could not find \"counter\" in \"%s\"", sSection);
+				LogError("[BossHP] Could not find \"counter\" in \"%s\"", sSection);
 				continue;
 			}
 
@@ -459,7 +459,7 @@ stock void LoadConfig()
 			if (!KvConfig.GetString("iterator", sIterator, sizeof(sIterator)))
 			{
 				g_bConfigError = true;
-				LogError("Could not find \"iterator\" in \"%s\"", sSection);
+				LogError("[BossHP] Could not find \"iterator\" in \"%s\"", sSection);
 				continue;
 			}
 
@@ -467,7 +467,7 @@ stock void LoadConfig()
 			if (!KvConfig.GetString("counter", sCounter, sizeof(sCounter)))
 			{
 				g_bConfigError = true;
-				LogError("Could not find \"counter\" in \"%s\"", sSection);
+				LogError("[BossHP] Could not find \"counter\" in \"%s\"", sSection);
 				continue;
 			}
 
@@ -475,7 +475,7 @@ stock void LoadConfig()
 			if (!KvConfig.GetString("backup", sBackup, sizeof(sBackup)))
 			{
 				g_bConfigError = true;
-				LogError("Could not find \"backup\" in \"%s\"", sSection);
+				LogError("[BossHP] Could not find \"backup\" in \"%s\"", sSection);
 				continue;
 			}
 
@@ -491,7 +491,7 @@ stock void LoadConfig()
 		if (Config == INVALID_HANDLE)
 		{
 			g_bConfigError = true;
-			LogError("Invalid \"method\"(%s) in \"%s\"", sMethod, sSection);
+			LogError("[BossHP] Invalid \"method\"(%s) in \"%s\"", sMethod, sSection);
 			continue;
 		}
 
@@ -531,7 +531,7 @@ stock void LoadConfig()
 	{
 		delete g_aConfig;
 		g_bConfigError = true;
-		LogError("Empty mapconfig: \"%s\"", sConfigFile);
+		LogError("[BossHP] Empty mapconfig: \"%s\"", sConfigFile);
 		return;
 	}
 
@@ -563,7 +563,7 @@ void OnTrigger(int entity, const char[] output, SDKHookType HookType = view_as<S
 
 	if (g_hCVar_VerboseLog.IntValue > 1)
 	{
-		LogMessage("OnTrigger(%d:\"%s\":#%d, \"%s\")", entity, sTargetname, iHammerID, output);
+		LogMessage("[BossHP] OnTrigger(%d:\"%s\":#%d, \"%s\")", entity, sTargetname, iHammerID, output);
 	}
 
 	for (int i = 0; i < g_aConfig.Length; i++)
@@ -629,9 +629,9 @@ void OnTrigger(int entity, const char[] output, SDKHookType HookType = view_as<S
 			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
 				if (iTriggerHammerID == -1)
-					LogMessage("Triggered boss %s(%d) from output %s", sTargetname, entity, output);
+					LogMessage("[BossHP] Triggered boss %s(%d) from output %s", sTargetname, entity, output);
 				else
-					LogMessage("Triggered boss #%d(%d) from output %s", iTriggerHammerID, entity, output);
+					LogMessage("[BossHP] Triggered boss #%d(%d) from output %s", iTriggerHammerID, entity, output);
 			}
 		}
 	}
@@ -691,11 +691,11 @@ void OnShowTrigger(int entity, const char[] output, SDKHookType HookType = view_
 		{
 			if (iShowTriggerHammerID == -1)
 			{
-				LogMessage("Triggered show boss %s(%d) from output %s", sTargetname, entity, output);
+				LogMessage("[BossHP] Triggered show boss %s(%d) from output %s", sTargetname, entity, output);
 			}
 			else
 			{
-				LogMessage("Triggered show boss #%d(%d) from output %s", iShowTriggerHammerID, entity, output);
+				LogMessage("[BossHP] Triggered show boss #%d(%d) from output %s", iShowTriggerHammerID, entity, output);
 			}
 		}
 
@@ -728,7 +728,7 @@ void OnShowTrigger(int entity, const char[] output, SDKHookType HookType = view_
 				Boss.fShowAt = GetGameTime() + fShowTriggerDelay;
 				if (g_hCVar_VerboseLog.IntValue > 0)
 				{
-					LogMessage("Scheduled show(%f) boss %d", fShowTriggerDelay, j);
+					LogMessage("[BossHP] Scheduled show(%f) boss %d", fShowTriggerDelay, j);
 				}
 			}
 			else
@@ -736,7 +736,7 @@ void OnShowTrigger(int entity, const char[] output, SDKHookType HookType = view_
 				Boss.bShow = true;
 				if (g_hCVar_VerboseLog.IntValue > 0)
 				{
-					LogMessage("Showing boss %d", j);
+					LogMessage("[BossHP] Showing boss %d", j);
 				}
 			}
 		}
@@ -797,11 +797,11 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 		{
 			if (iKillTriggerHammerID == -1)
 			{
-				LogMessage("Triggered kill boss %s(%d) from output %s", sTargetname, entity, output);
+				LogMessage("[BossHP] Triggered kill boss %s(%d) from output %s", sTargetname, entity, output);
 			}
 			else
 			{
-				LogMessage("Triggered kill boss #%d(%d) from output %s", iKillTriggerHammerID, entity, output);
+				LogMessage("[BossHP] Triggered kill boss #%d(%d) from output %s", iKillTriggerHammerID, entity, output);
 			}
 		}
 
@@ -834,7 +834,7 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 				Boss.fKillAt = GetGameTime() + fKillTriggerDelay;
 				if (g_hCVar_VerboseLog.IntValue > 0)
 				{
-					LogMessage("Scheduled kill(%f) boss %d", fKillTriggerDelay, j);
+					LogMessage("[BossHP] Scheduled kill(%f) boss %d", fKillTriggerDelay, j);
 				}
 			}
 			else
@@ -845,7 +845,7 @@ void OnKillTrigger(int entity, const char[] output, SDKHookType HookType = view_
 				j--;
 				if (g_hCVar_VerboseLog.IntValue > 0)
 				{
-					LogMessage("Killed boss %d", j + 1);
+					LogMessage("[BossHP] Killed boss %d", j + 1);
 				}
 			}
 		}
@@ -900,7 +900,7 @@ void ProcessEntitySpawned(int entity)
 
 	if (g_hCVar_VerboseLog.IntValue > 1)
 	{
-		LogMessage("ProcessEntitySpawned(%s)", sTargetname);
+		LogMessage("[BossHP] ProcessEntitySpawned(%s)", sTargetname);
 	}
 
 	int iHammerID = GetEntProp(entity, Prop_Data, "m_iHammerID");
@@ -935,7 +935,7 @@ void ProcessEntitySpawned(int entity)
 
 			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
-				LogMessage("Hooked trigger %s:%s", sTrigger, sOutput);
+				LogMessage("[BossHP] Hooked trigger %s:%s", sTrigger, sOutput);
 			}
 		}
 
@@ -965,7 +965,7 @@ void ProcessEntitySpawned(int entity)
 
 			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
-				LogMessage("Hooked showtrigger %s:%s", sShowTrigger, sShowOutput);
+				LogMessage("[BossHP] Hooked showtrigger %s:%s", sShowTrigger, sShowOutput);
 			}
 		}
 
@@ -995,7 +995,7 @@ void ProcessEntitySpawned(int entity)
 
 			if (g_hCVar_VerboseLog.IntValue > 0)
 			{
-				LogMessage("Hooked killtrigger %s:%s", sKillTrigger, sKillOutput);
+				LogMessage("[BossHP] Hooked killtrigger %s:%s", sKillTrigger, sKillOutput);
 			}
 		}
 	}
@@ -1023,7 +1023,7 @@ void ProcessGameFrame()
 			{
 				char sBoss[64];
 				_Config.GetName(sBoss, sizeof(sBoss));
-				LogMessage("Deleting boss %s (%d) (KillAt)", sBoss, i);
+				LogMessage("[BossHP] Deleting boss %s (%d) (KillAt)", sBoss, i);
 			}
 
 			CreateForward_OnBossDead(Boss);
@@ -1057,7 +1057,7 @@ void ProcessGameFrame()
 			{
 				char sBoss[64];
 				_Config.GetName(sBoss, sizeof(sBoss));
-				LogMessage("Deleting boss %s (%d) (dead)", sBoss, i);
+				LogMessage("[BossHP] Deleting boss %s (%d) (dead)", sBoss, i);
 			}
 
 			CreateForward_OnBossDead(Boss);
@@ -1395,7 +1395,7 @@ bool BossInit(CBoss _Boss)
 
 				if (g_hCVar_VerboseLog.IntValue > 0)
 				{
-					LogMessage("Hooked showtrigger %s:%s", sShowTrigger, sShowOutput);
+					LogMessage("[BossHP] Hooked showtrigger %s:%s", sShowTrigger, sShowOutput);
 				}
 			}
 		}
@@ -1424,7 +1424,7 @@ bool BossInit(CBoss _Boss)
 
 				if (g_hCVar_VerboseLog.IntValue > 0)
 				{
-					LogMessage("Hooked killtrigger %s:%s", sKillTrigger, sKillOutput);
+					LogMessage("[BossHP] Hooked killtrigger %s:%s", sKillTrigger, sKillOutput);
 				}
 			}
 		}
@@ -1434,7 +1434,7 @@ bool BossInit(CBoss _Boss)
 	_Config.GetName(sBoss, sizeof(sBoss));
 	if (g_hCVar_VerboseLog.IntValue > 0)
 	{
-		LogMessage("Initialized boss %s (template = %d)", sBoss, iTemplateNum);
+		LogMessage("[BossHP] Initialized boss %s (template = %d)", sBoss, iTemplateNum);
 	}
 
 	CreateForward_OnBossInitialized(_Boss);
